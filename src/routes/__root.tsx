@@ -120,7 +120,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || "583516832517-i1vcusmsiafecllognh1k63rh2dbrfq0.apps.googleusercontent.com"}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <AuthProvider>

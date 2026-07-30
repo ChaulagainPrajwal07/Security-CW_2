@@ -17,8 +17,8 @@ import queriesRoutes from "./routes/queries.js";
 import mfaRoutes from "./routes/mfa.js";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
+const PORT = process.env.PORT || 5001;
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 const clientOrigin = CLIENT_URL.replace(/\/$/, "");
 
 // ── Security Setup ─────────────────────────────────────────
