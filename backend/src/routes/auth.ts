@@ -158,15 +158,15 @@ router.post(
     if (user && user.failedLoginAttempts >= 5) {
       const lastFailed = user.lastFailedLogin ? new Date(user.lastFailedLogin).getTime() : 0;
       const timeSinceLastFailed = Date.now() - lastFailed;
-      const lockoutDuration = 15 * 60 * 1000; // 15 minutes
+      const lockoutDuration = 10 * 1000; // 10 seconds (temporary for testing)
 
       if (timeSinceLastFailed < lockoutDuration) {
         logAccountLocked(email, req.ip, req.headers["user-agent"]);
         const remainingMs = lockoutDuration - timeSinceLastFailed;
-        const remainingMins = Math.ceil(remainingMs / 60000);
+        const remainingSecs = Math.ceil(remainingMs / 1000);
         res.status(429).json({
           success: false,
-          message: `Account temporarily locked due to multiple failed attempts. Try again in ${remainingMins} minute(s).`,
+          message: `Account temporarily locked due to multiple failed attempts. Try again in ${remainingSecs} second(s).`,
           lockedUntil: new Date(lastFailed + lockoutDuration).toISOString(),
         });
         return;
