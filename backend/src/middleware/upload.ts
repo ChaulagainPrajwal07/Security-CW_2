@@ -38,4 +38,34 @@ export const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
+  fileFilter: (req, file, cb) => {
+    // 1. Sanitize original filename (prevent Directory Traversal / Null Byte Injection)
+    // path.basename strips out any directory paths like ../../../
+    // .replace(/\0/g, '') removes null bytes
+    const sanitizedFilename = path.basename(file.originalname).replace(/\0/g, "");
+    // 2. Prevent Double Extensions (e.g. shell.php.png)
+    // To strictly prevent execution bypasses on misconfigured web servers, reject any filename with multiple dots.
+    if (sanitizedFilename.split(".").length > 2) {
+      return cb(new Error(`File upload rejected: Filenames with multiple dots/extensions are not allowed.`));
+    }
+
+    // 3. Extract and validate extension (prevent RCE)
+    const ext = path.extname(sanitizedFilename).toLowerCase();
+    const ALLOWED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"];
+    if (!ALLOWED_EXTENSIONS.includes(ext)) {
+      return cb(new Error(`File upload rejected: Extension ${ext} is not allowed.`));
+    }
+
+    // 3. Validate MIME type (prevent RCE)
+    const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+    if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+      return cb(new Error(`File upload rejected: MIME type ${file.mimetype} is not allowed.`));
+    }
+
+    // Overwrite original name with sanitized version to prevent traversal later down the line
+    file.originalname = sanitizedFilename;
+
+    // Passed all security checks
+    cb(null, true);
+  },
 });
